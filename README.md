@@ -1,2 +1,2 @@
-# a-gaag-gift
-GPT as a Game
+# A Gaag Gift
+A Python game repository.
