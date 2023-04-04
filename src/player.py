@@ -1,6 +1,6 @@
 import pygame
-import math
 import random
+import asyncio
 
 class Player:
   def __init__(self, screen, emoji_images):
@@ -21,22 +21,22 @@ class Player:
     elif key == pygame.K_d:
       x += self.speed
 
-    # Keep the player within the screen bounds
     x = max(15, min(x, self.screen_width - 15))
 
     self.position = (x, y)
 
   def draw(self):
-    shooter_rect = pygame.Rect(self.position[0] - 25, self.position[1] - 25, 50, 50)
-
     emoji_position = (
-        self.position[0] - self.current_emoji.get_width() // 2,
-        self.position[1] - self.current_emoji.get_height() // 2
+        self.position[0] - self.current_emoji[1].get_width() // 2,
+        self.position[1] - self.current_emoji[1].get_height() // 2
     )
-    self.screen.blit(self.current_emoji, emoji_position)
+    self.screen.blit(self.current_emoji[1], emoji_position)
 
-  def shoot_emoji(self, game):
+  async def shoot_emoji(self, game):
     emoji_x, emoji_y = self.position
 
-    game.add_emoji_to_grid(self.current_emoji, (emoji_x, emoji_y))
-    self.current_emoji = self.choose_next_emoji()
+    async def gpt_callback(emoji_name):
+      await game.story_queue.put(emoji_name)
+      self.current_emoji = self.choose_next_emoji()
+
+    await game.add_emoji_to_grid(self.current_emoji, (emoji_x, emoji_y), callback=lambda emoji_name: asyncio.create_task(gpt_callback(emoji_name)))
