@@ -110,7 +110,7 @@ class Game:
 	def update(self):
 		self.compress_grid()
 
-		if time.time() - self.last_layer_time >= 4:
+		if time.time() - self.last_layer_time >= 3:
 			self.add_top_layer()
 			self.last_layer_time = time.time()
 
